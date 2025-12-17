@@ -2,15 +2,10 @@
 #include "pico/stdlib.h"
 #include "FreeRTOS.h"
 #include "task.h"
-
+#include "led.h"
 void vTaskCode(void *pv) {
-    const uint LED = 25;
-    gpio_init(LED);
-    gpio_set_dir(LED, GPIO_OUT);
     while(1) {
-        gpio_put(LED, 1);
-        vTaskDelay(pdMS_TO_TICKS(500));
-        gpio_put(LED, 0);
+		led_sw();
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
@@ -18,7 +13,8 @@ void vTaskCode(void *pv) {
 int main() {
 	stdio_init_all();
 	sleep_ms(3000);
-    xTaskCreate(
+	led_init();
+	xTaskCreate(
         vTaskCode,
         "blink",
         2048,
@@ -27,5 +23,7 @@ int main() {
         NULL
     );
     vTaskStartScheduler();
-    while(1){}
+    while(1){
+		tight_loop_contents();
+	}
 }

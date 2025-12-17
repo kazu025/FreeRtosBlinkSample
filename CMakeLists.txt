@@ -4,17 +4,27 @@ cmake_minimum_required(VERSION 3.12)
 # note: this must happen before project()
 include($ENV{PICO_SDK_PATH}/pico_sdk_init.cmake)
 project(hello_world C CXX ASM)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
 set(PICO_SDK_FREERTOS_SOURCE FreeRTOS-Kernel)
+
 # initialize the Pico SDK
 pico_sdk_init()
 
 
 add_executable(hello_world
     src/main.cpp 
+	src/led.cpp
 )
-
+target_include_directories(hello_world PRIVATE include)
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(hello_world pico_stdlib)
+
+if (PICO_CYW43_SUPPORTED)
+    target_link_libraries(hello_world pico_cyw43_arch_none)
+endif()
+
 add_library(FreeRTOS
     ${PICO_SDK_FREERTOS_SOURCE}/event_groups.c
     ${PICO_SDK_FREERTOS_SOURCE}/list.c
